@@ -7,8 +7,8 @@ class Deck:
     def __init__(self):
         self.cards=[]
 
-    def generate_deck(self,suites,number_of_cardtypes):
-        for s in range(suites):
+    def generate_deck(self,suits,number_of_cardtypes):
+        for s in range(suits):
             for cardtype in range(1,number_of_cardtypes+1):
                 self.cards.append(Card(cardtype))
         
@@ -16,8 +16,8 @@ class Deck:
         random.shuffle(self.cards)
         return self.cards
 
-    def split_deck(self):
-        l=len(self.cards)//2
+    def split_deck(self,n):
+        l=len(self.cards)//n
         return self.cards[:l],self.cards[l:]
     
 class Game:
@@ -28,20 +28,33 @@ class Game:
         self.player2_cards_ontable=[]
         self.round_number=0
 
+        ''' 
+        Number of cards used to place on table play during WAR.
+        Hardcoded as 3, but can be changed if you want to change the rules of the game
+        '''
+        self.min_card_count_war=3
 
     def compare_faceup_cards(self,rank1,rank2):
+        # 
         if rank1> rank2:
-            return 1
+            return "player1"
         elif rank2> rank1:
-            return -1
+            return "player2"
         elif rank1 == rank2:
-            return 0
+            return "war"
 
     def is_stack_empty(self,s):
         if len(s)==0:
             return True
         elif len(s)>0:
             return False
+
+    def has_mincards(self,cards):
+        # Checks if the player has min number of cards to play in WAR. 
+        if len(cards)<=self.min_card_count_war:
+            return False
+        elif len(cards)>self.min_card_count_war:
+            return True
 
     def play(self):
         while True:
@@ -55,36 +68,34 @@ class Game:
                     print("Current PLayer2 Faceup Card Value: ",card_p2.rank)
                     comp= self.compare_faceup_cards(card_p1.rank,card_p2.rank)
 
-                if comp == 1:
+                if comp == "player1":
                     self.player1_cards= [card_p1,card_p2]+ self.player1_cards_ontable+ self.player2_cards_ontable+ self.player1_cards
                     self.player1_cards_ontable=[]
                     self.player2_cards_ontable=[]
                     break
-                elif comp == -1:
+                elif comp == "player2":
                     self.player2_cards=[card_p2,card_p1]+ self.player2_cards_ontable+ self.player1_cards_ontable+ self.player2_cards
                     self.player1_cards_ontable=[]
                     self.player2_cards_ontable=[]    
                     break           
-                elif comp == 0:
+                elif comp == "war":
                     print("********* IN WAR **************")
-                    if len(self.player1_cards)<=3:
+                    if not self.has_mincards(self.player1_cards):
                         self.player1_cards_ontable.extend([card_p1]+self.player1_cards[:])
                         self.player1_cards=[]
                         self.player1_cards.append(self.player1_cards_ontable.pop())
                     else:
-                        self.player1_cards_ontable.extend([card_p1]+self.player1_cards[-3:])
-                        self.player1_cards= self.player1_cards[:-3]
-                        #self.player1_cards.append(Card(3))
-                        #self.player1_cards.append(self.player1_cards_ontable.pop())
-                    if len(self.player2_cards)<=3:
+                        self.player1_cards_ontable.extend([card_p1]+self.player1_cards[-self.min_card_count_war:])
+                        self.player1_cards= self.player1_cards[:-self.min_card_count_war]
+
+                    if not self.has_mincards(self.player2_cards):
                         self.player2_cards_ontable.extend([card_p2]+self.player2_cards[:])
                         self.player2_cards=[]
                         self.player2_cards.append(self.player2_cards_ontable.pop())
                     else:
-                        self.player2_cards_ontable.extend([card_p2]+self.player2_cards[-3:])
-                        self.player2_cards= self.player2_cards[:-3]
-                        #self.player2_cards.append(Card(3))
-                        #self.player2_cards.append(self.player2_cards_ontable.pop())
+                        self.player2_cards_ontable.extend([card_p2]+self.player2_cards[-self.min_card_count_war:])
+                        self.player2_cards= self.player2_cards[:-self.min_card_count_war]
+
                     break
 
             print("After Round Number: ",self.round_number)
@@ -107,7 +118,7 @@ if __name__=="__main__":
     deck= Deck()
     deck.generate_deck(4,13)
     deck.shuffle_deck()
-    cards_p1,cards_p2=deck.split_deck()
+    cards_p1,cards_p2=deck.split_deck(2)
     game= Game(cards_p1,cards_p2)
     game.play()
     # play game 
