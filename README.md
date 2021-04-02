@@ -18,9 +18,9 @@ Python implementation of card game (War)
 4. If the game is running for more than 1000 times, i am exiting the game to prevent from infinite loop
 
 ## If Given More time
-1. I have used List for peforming pop() and append() operation. This might cause an issue when the number of players grow and game should run on large scale. 
+1. I have used python defualt List for peforming pop() and append() operation. This might cause an issue when the number of players grow and game should run large scale. 
 With more time, I could like to implement using Queue data structure imported from Queue library.
 2. I have defined Player Class but I have not used it. If even more time , I would create each player using the Player class.
-3. Genelarizing the game for N players . Currently , only two players can play the game. I would like to extend the current functionality for N players. I have thought about the implementation.I would love to try this 
+3. Generalizing the game for N players . Currently , only two players can play the game. I would like to extend the current functionality for N players. I have thought about the implementation.I would love to try this 
 4. My current code doesnt have any interaction with the user, becuase the game was running for many rounds . So, I did not implement interaction. But I would like to add that feature to this using cool animation.
 
